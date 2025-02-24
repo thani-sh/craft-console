@@ -3769,6 +3769,11 @@ zimmerframe@^1.1.2:
   resolved "https://registry.yarnpkg.com/zimmerframe/-/zimmerframe-1.1.2.tgz#5b75f1fa83b07ae2a428d51e50f58e2ae6855e5e"
   integrity sha512-rAbqEGa8ovJy4pyBxZM70hg4pE6gDgaQ0Sl9M3enG3I0d6H4XSAM3GeNGLKnsBpuijUow064sf7ww1nutC5/3w==
 
+zod-metadata@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/zod-metadata/-/zod-metadata-1.1.1.tgz#b243fc91892d493fe92c585eb2eded1971a89311"
+  integrity sha512-3Ydi+exEcPqKYjBTakx13sN2ik/z4PD1SmWFaD9mgW5GQ3+5+fGSZ6mTi6ssSe2IQiLjufRjNJ3r6AIMfOmtdw==
+
 zod@^3.24.2:
   version "3.24.2"
   resolved "https://registry.yarnpkg.com/zod/-/zod-3.24.2.tgz#8efa74126287c675e92f46871cfc8d15c34372b3"

@@ -16,7 +16,7 @@ body {
 	background-color: #705641; /* Base dirt color to avoid gaps while loading */
 	background-color: #705641; /* Base dirt color to avoid gaps while loading */
 	background-image:
-		linear-gradient(rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.65)),
+		linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75)),
 		url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 16 16'%3E%3Crect fill='%23705641' width='16' height='16'/%3E%3Cg fill-rule='evenodd' opacity='0.7'%3E%3Crect fill='%235a4737' x='0' y='0' width='4' height='4'/%3E%3Crect fill='%237a5f4a' x='4' y='0' width='4' height='4'/%3E%3Crect fill='%23634e3d' x='8' y='0' width='4' height='4'/%3E%3Crect fill='%23806651' x='12' y='0' width='4' height='4'/%3E%3Crect fill='%236a5243' x='0' y='4' width='4' height='4'/%3E%3Crect fill='%23524033' x='4' y='4' width='4' height='4'/%3E%3Crect fill='%23856752' x='8' y='4' width='4' height='4'/%3E%3Crect fill='%23735948' x='12' y='4' width='4' height='4'/%3E%3Crect fill='%237c604d' x='0' y='8' width='4' height='4'/%3E%3Crect fill='%2397755c' x='4' y='8' width='4' height='4'/%3E%3Crect fill='%234a3b2e' x='8' y='8' width='4' height='4'/%3E%3Crect fill='%238e6e57' x='12' y='8' width='4' height='4'/%3E%3Crect fill='%23806651' x='0' y='12' width='4' height='4'/%3E%3Crect fill='%235a4737' x='4' y='12' width='4' height='4'/%3E%3Crect fill='%237a5f4a' x='8' y='12' width='4' height='4'/%3E%3Crect fill='%23634e3d' x='12' y='12' width='4' height='4'/%3E%3C/g%3E%3C/svg%3E");
 	background-repeat: repeat;
 }
