@@ -69,7 +69,7 @@
 			</div>
 		</div>
 		{#if description}
-			<div class="text-md mb-4 block text-white" class:opacity-50={disabled}>
+			<div class="text-md mb-4 block hidden text-white sm:flex" class:opacity-50={disabled}>
 				{@html description}
 			</div>
 		{/if}

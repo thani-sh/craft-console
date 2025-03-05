@@ -1,5 +1,4 @@
-import { db } from '$lib/server/data/database';
-import * as table from '$lib/server/data/schema';
+import { db, schema, type User } from '$lib/server/data';
 import { hash, verify } from '@node-rs/argon2';
 import { encodeBase32LowerCase } from '@oslojs/encoding';
 import { eq } from 'drizzle-orm';
@@ -26,24 +25,24 @@ export function createUserId() {
 /**
  * Finds a user by ID.
  */
-export async function findUserById(id: string): Promise<table.User | null> {
-	const [user] = await db.select().from(table.user).where(eq(table.user.id, id));
+export async function findUserById(id: string): Promise<User | null> {
+	const [user] = await db.select().from(schema.user).where(eq(schema.user.id, id));
 	return user ?? null;
 }
 
 /**
  * Finds a user by username.
  */
-export async function findUserByName(username: string): Promise<table.User | null> {
-	const [user] = await db.select().from(table.user).where(eq(table.user.username, username));
+export async function findUserByName(username: string): Promise<User | null> {
+	const [user] = await db.select().from(schema.user).where(eq(schema.user.username, username));
 	return user ?? null;
 }
 
 /**
  * Authenticates a user by username and password.
  */
-export async function authenticate(username: string, password: string): Promise<table.User | null> {
-	const [user] = await db.select().from(table.user).where(eq(table.user.username, username));
+export async function authenticate(username: string, password: string): Promise<User | null> {
+	const [user] = await db.select().from(schema.user).where(eq(schema.user.username, username));
 	if (!user) {
 		return null;
 	}
@@ -57,7 +56,7 @@ export async function authenticate(username: string, password: string): Promise<
 /**
  * Creates a new user account with given username and password.
  */
-export async function createUser(username: string, password: string): Promise<table.User> {
+export async function createUser(username: string, password: string): Promise<User> {
 	const id = createUserId();
 	const passwordHash = await hash(password, {
 		// recommended minimum parameters
@@ -66,11 +65,11 @@ export async function createUser(username: string, password: string): Promise<ta
 		outputLen: 32,
 		parallelism: 1
 	});
-	const user: table.User = {
+	const user: User = {
 		id,
 		username,
 		passwordHash
 	};
-	await db.insert(table.user).values(user);
+	await db.insert(schema.user).values(user);
 	return user;
 }

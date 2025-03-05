@@ -7,7 +7,7 @@ import type { Actions, PageServerLoad } from './$types';
  */
 export const load: PageServerLoad = async (event) => {
 	if (event.locals.user) {
-		return redirect(302, '/dash');
+		return redirect(302, '/');
 	} else {
 		return redirect(302, '/auth/login');
 	}

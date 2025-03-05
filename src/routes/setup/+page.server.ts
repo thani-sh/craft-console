@@ -20,6 +20,6 @@ export const actions: Actions = {
 		// Note: this can take a while
 		const name = file.name.slice(0, file.name.length - 4);
 		await setupNewMinecraftServer(name, file);
-		return redirect(302, '/dash');
+		return redirect(302, '/');
 	}
 };

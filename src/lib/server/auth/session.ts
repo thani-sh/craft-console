@@ -1,4 +1,4 @@
-import { db, table } from '$lib/server/data/database';
+import { db, schema, type Session } from '$lib/server/data';
 import { sha256 } from '@oslojs/crypto/sha2';
 import { encodeBase64url, encodeHexLowerCase } from '@oslojs/encoding';
 import type { RequestEvent } from '@sveltejs/kit';
@@ -33,19 +33,19 @@ export function createToken() {
 /**
  * Validates a session token.
  */
-export async function validateToken(token: string): Promise<table.Session | null> {
+export async function validateToken(token: string): Promise<Session | null> {
 	const sessionId = getSessionId(token);
 	const [session] = await db
 		.select()
-		.from(table.session)
-		.where(eq(table.session.id, sessionId))
+		.from(schema.session)
+		.where(eq(schema.session.id, sessionId))
 		.limit(1);
 	if (!session) {
 		return null;
 	}
 	const isExpired = Date.now() >= session.expiresAt.getTime();
 	if (isExpired) {
-		await db.delete(table.session).where(eq(table.session.id, session.id));
+		await db.delete(schema.session).where(eq(schema.session.id, session.id));
 		return null;
 	}
 	return session;
@@ -57,15 +57,15 @@ export async function validateToken(token: string): Promise<table.Session | null
 export async function createSession(
 	event: RequestEvent,
 	userId: string
-): Promise<{ session: table.Session; token: string }> {
+): Promise<{ session: Session; token: string }> {
 	const token = createToken();
 	const sessionId = getSessionId(token);
-	const session: table.Session = {
+	const session: Session = {
 		id: sessionId,
 		userId,
 		expiresAt: new Date(Date.now() + DAY_MILLIS * 30)
 	};
-	await db.insert(table.session).values(session);
+	await db.insert(schema.session).values(session);
 	setSessionCookie(event, token, session.expiresAt);
 	return { session, token };
 }
@@ -74,7 +74,7 @@ export async function createSession(
  * Invalidates a session by id.
  */
 export async function deleteSession(event: RequestEvent, sessionId: string): Promise<void> {
-	await db.delete(table.session).where(eq(table.session.id, sessionId));
+	await db.delete(schema.session).where(eq(schema.session.id, sessionId));
 	deleteSessionCookie(event);
 }
 
@@ -100,7 +100,7 @@ export function deleteSessionCookie(event: RequestEvent): void {
 /**
  * Retrieves the current session from the cookie.
  */
-export async function getCurrentSession(event: RequestEvent): Promise<table.Session | null> {
+export async function getCurrentSession(event: RequestEvent): Promise<Session | null> {
 	const token = event.cookies.get(CookieName);
 	if (!token) {
 		return null;

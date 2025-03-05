@@ -1,5 +1,6 @@
 import zod, * as z from 'zod';
 import { register } from 'zod-metadata';
+import { formControlfromZodSchema } from '../client/form';
 
 /**
  * Register zod metadata
@@ -404,3 +405,17 @@ export type MinecraftServerConfig = z.infer<typeof minecraftServerConfigSchema>;
  * Type definition for a Minecraft server configuration key
  */
 export type MinecraftServerConfigKey = keyof MinecraftServerConfig;
+
+/**
+ * Form control definitions for a Minecraft server configuration object
+ */
+export const minecraftServerConfigControls = Object.entries(minecraftServerConfigSchema.shape).map(
+	([key, schema]) => formControlfromZodSchema(key, schema)
+);
+
+/**
+ * Partial Minecraft server configuration schema
+ */
+export const partialMinecraftConfigSchema = Object.fromEntries(
+	Object.entries(minecraftServerConfigSchema.shape).map(([key, schema]) => [key, schema.optional()])
+);

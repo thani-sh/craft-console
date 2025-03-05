@@ -42,7 +42,7 @@
 			{label}
 		</label>
 	{/if}
-	<div class="grid grid-cols-1 gap-8 md:grid-cols-2">
+	<div class="grid grid-cols-1 gap-8 {description ? 'md:grid-cols-2' : ''}">
 		<div class="flex flex-row items-start gap-8">
 			<input
 				{id}
@@ -61,7 +61,7 @@
 			/>
 		</div>
 		{#if description}
-			<div class="text-md mb-4 block text-white" class:opacity-50={disabled}>
+			<div class="text-md mb-4 block hidden text-white sm:flex" class:opacity-50={disabled}>
 				{@html description}
 			</div>
 		{/if}

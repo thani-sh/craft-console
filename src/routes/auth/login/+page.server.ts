@@ -9,7 +9,7 @@ import type { Actions, PageServerLoad } from './$types';
  */
 export const load: PageServerLoad = async (event) => {
 	if (event.locals.user) {
-		return redirect(302, '/dash');
+		return redirect(302, '/');
 	}
 	return {};
 };
@@ -31,6 +31,6 @@ export const actions: Actions = {
 			return fail(401, { message: 'Invalid username or password' });
 		}
 		await createSession(event, user.id);
-		return redirect(302, '/dash');
+		return redirect(302, '/');
 	}
 };

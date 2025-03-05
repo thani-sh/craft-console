@@ -15,7 +15,7 @@
 	const tabs = [
 		{ id: 'worlds', label: 'Worlds', href: `${base}`, imageSrc: worldImage },
 		{ id: 'players', label: 'Players', href: `${base}/players`, imageSrc: playerImage },
-		{ id: 'configs', label: 'Configs', href: `${base}/configs`, imageSrc: serverImage }
+		{ id: 'configs', label: 'Settings', href: `${base}/configs`, imageSrc: serverImage }
 	].map((tab) => ({
 		...tab,
 		onclick: () => goto(tab.href)
@@ -28,12 +28,12 @@
 	<header class="flex flex-row">
 		<HTabs {tabs} selected={selectedTab?.id} />
 
-		<form method="post" action="/auth?/logout" use:enhance class="ml-8">
+		<form method="post" action="/auth?/logout" use:enhance class="ml-8 hidden sm:flex">
 			<Button icon={LogOut} className="py-5"></Button>
 		</form>
 	</header>
 
-	<section class="mt-8">
+	<section class="mt-16">
 		{@render children()}
 	</section>
 </div>
