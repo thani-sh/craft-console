@@ -37,3 +37,6 @@ vite.config.ts.timestamp-*
 yarn-debug.log*
 yarn-error.log*
 .yarn-integrity
+
+# Temporarry files
+.vscode/chrome-debug-profile
