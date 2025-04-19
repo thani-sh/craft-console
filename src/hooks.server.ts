@@ -1,11 +1,5 @@
 import { ADMIN_PASSWORD, ADMIN_USERNAME } from '$env/static/private';
-import {
-	CookieName,
-	createSession,
-	deleteSession,
-	getSessionId,
-	validateToken
-} from '$lib/server/auth/session';
+import { CookieName, deleteSession, getSessionId, validateToken } from '$lib/server/auth/session';
 import { findUserById } from '$lib/server/auth/user';
 import { bootstrap } from '$lib/server/bootstrap';
 import type { Handle } from '@sveltejs/kit';
@@ -31,7 +25,7 @@ const handleAuth: Handle = async ({ event, resolve }) => {
 	const session = await validateToken(token);
 	if (session) {
 		event.locals.user = await findUserById(session.userId);
-		event.locals.session = await createSession(event, session.userId);
+		event.locals.session = session;
 	} else {
 		const sessionId = getSessionId(token);
 		await deleteSession(event, sessionId);

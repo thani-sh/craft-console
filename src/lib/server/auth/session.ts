@@ -1,4 +1,4 @@
-import { db, schema, type Session } from '$lib/server/data';
+import { db, schema } from '$lib/server/data';
 import { sha256 } from '@oslojs/crypto/sha2';
 import { encodeBase64url, encodeHexLowerCase } from '@oslojs/encoding';
 import type { RequestEvent } from '@sveltejs/kit';
@@ -7,7 +7,7 @@ import { eq } from 'drizzle-orm';
 /**
  * The number of milliseconds in a day.
  */
-const DAY_MILLIS = 1000 * 60 * 60 * 24;
+const millisecondsPerDay = 1000 * 60 * 60 * 24;
 
 /**
  * Cookie name to store the session token
@@ -33,7 +33,7 @@ export function createToken() {
 /**
  * Validates a session token.
  */
-export async function validateToken(token: string): Promise<Session | null> {
+export async function validateToken(token: string) {
 	const sessionId = getSessionId(token);
 	const [session] = await db
 		.select()
@@ -54,16 +54,13 @@ export async function validateToken(token: string): Promise<Session | null> {
 /**
  * Creates a new session.
  */
-export async function createSession(
-	event: RequestEvent,
-	userId: string
-): Promise<{ session: Session; token: string }> {
+export async function createSession(event: RequestEvent, userId: string) {
 	const token = createToken();
 	const sessionId = getSessionId(token);
-	const session: Session = {
+	const session = {
 		id: sessionId,
 		userId,
-		expiresAt: new Date(Date.now() + DAY_MILLIS * 30)
+		expiresAt: new Date(Date.now() + millisecondsPerDay * 30)
 	};
 	await db.insert(schema.session).values(session);
 	setSessionCookie(event, token, session.expiresAt);
@@ -100,7 +97,7 @@ export function deleteSessionCookie(event: RequestEvent): void {
 /**
  * Retrieves the current session from the cookie.
  */
-export async function getCurrentSession(event: RequestEvent): Promise<Session | null> {
+export async function getCurrentSession(event: RequestEvent) {
 	const token = event.cookies.get(CookieName);
 	if (!token) {
 		return null;

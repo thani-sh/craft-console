@@ -29,7 +29,7 @@
 		<HTabs {tabs} selected={selectedTab?.id} />
 
 		<form method="post" action="/auth?/logout" use:enhance class="ml-8 hidden sm:flex">
-			<Button icon={LogOut} className="py-5"></Button>
+			<Button type="submit" icon={LogOut} className="py-5"></Button>
 		</form>
 	</header>
 
