@@ -13,9 +13,9 @@
 
 	const base = `/servers/${data.server.slug}`;
 	const tabs = [
-		{ id: 'worlds', label: 'Worlds', href: `${base}`, imageSrc: worldImage },
+		{ id: 'worlds', label: 'Worlds', href: `${base}/worlds`, imageSrc: worldImage },
 		{ id: 'players', label: 'Players', href: `${base}/players`, imageSrc: playerImage },
-		{ id: 'configs', label: 'Settings', href: `${base}/configs`, imageSrc: serverImage }
+		{ id: 'settings', label: 'Settings', href: `${base}/settings`, imageSrc: serverImage }
 	].map((tab) => ({
 		...tab,
 		onclick: () => goto(tab.href)

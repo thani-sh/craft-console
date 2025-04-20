@@ -1,6 +1,13 @@
 import { startServer, stopServer } from '$lib/server/game';
-import { fail } from '@sveltejs/kit';
-import type { Actions } from './$types';
+import { fail, redirect } from '@sveltejs/kit';
+import type { Actions, PageServerLoad } from './$types';
+
+/**
+ * Load function for the page.
+ */
+export const load: PageServerLoad = async (event) => {
+	return redirect(302, `/servers/${event.params.serverSlug}/worlds`);
+};
 
 /**
  * Actions for the page.
