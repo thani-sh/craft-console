@@ -6,11 +6,10 @@
 
 <Heading>Setup a new server</Heading>
 <Text>
-	Upload the latest Minecraft Bedrock server zip file.<br /> <br />
-	You can download it from here: <br />
-	<a href="https://www.minecraft.net/en-us/download/server/bedrock">
-		https://www.minecraft.net/en-us/download/server/bedrock
-	</a>
+	Upload the Minecraft Bedrock server zip file.<br />
+	You can download it from
+	<a class="underline" href="https://www.minecraft.net/en-us/download/server/bedrock"> minecraft</a>
+	website
 </Text>
 
 <form
