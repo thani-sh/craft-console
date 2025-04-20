@@ -8,7 +8,24 @@ export type ProcessStatus = 'idle' | 'running' | 'stopped';
 /**
  * Options for creating a new process.
  */
-export type ProcessOptions = { cwd?: string; env?: NodeJS.ProcessEnv };
+export type ProcessOptions = {
+	cwd?: string;
+	env?: NodeJS.ProcessEnv;
+};
+
+/**
+ * A log line from the process.
+ */
+export type ProcessLogLine = {
+	type: 'stdout' | 'stderr';
+	line: string;
+	time: number;
+};
+
+/**
+ * The maximum number of lines to keep in the logs.
+ */
+export const LOGS_SCROLLBACK = 1000;
 
 /**
  * A wrapper class around NodeJS child process.
@@ -18,8 +35,9 @@ export class Process {
 	private status: ProcessStatus = 'idle';
 	private command: string;
 	private args: string[];
-	private options?: ProcessOptions;
-	private exitCode: number | null = null;
+	private opts?: ProcessOptions;
+	private code: number | null = null;
+	private logs: ProcessLogLine[] = [];
 
 	/**
 	 * Initializes the process configuration without starting it.
@@ -27,7 +45,7 @@ export class Process {
 	constructor(command: string, args: string[], options?: ProcessOptions) {
 		this.command = command;
 		this.args = args;
-		this.options = options;
+		this.opts = options;
 	}
 
 	/**
@@ -41,7 +59,14 @@ export class Process {
 	 * Returns the exit code of the process after it has stopped, or null otherwise.
 	 */
 	public getExitCode(): number | null {
-		return this.exitCode;
+		return this.code;
+	}
+
+	/**
+	 * Returns the stored log lines.
+	 */
+	public getLogs(): ProcessLogLine[] {
+		return this.logs;
 	}
 
 	/**
@@ -53,25 +78,48 @@ export class Process {
 				return reject(new Error('Process is not idle.'));
 			}
 
-			this.exitCode = null;
+			this.logs = [];
+			this.code = null;
 			try {
-				this.process = spawn(this.command, this.args, this.options);
+				this.process = spawn(this.command, this.args, this.opts);
 			} catch (error) {
 				this.status = 'stopped';
-				this.exitCode = 1;
+				this.code = 1;
 				return reject(error);
+			}
+
+			if (this.process.stdout) {
+				let stdoutBuffer = '';
+				this.process.stdout.setEncoding('utf8');
+				this.process.stdout.on('data', (data: string) => {
+					stdoutBuffer += data;
+					const lines = stdoutBuffer.split('\n');
+					stdoutBuffer = lines.pop() || '';
+					lines.forEach((line) => this.addLogLine('stdout', line));
+				});
+			}
+
+			if (this.process.stderr) {
+				let stderrBuffer = '';
+				this.process.stderr.setEncoding('utf8');
+				this.process.stderr.on('data', (data: string) => {
+					stderrBuffer += data;
+					const lines = stderrBuffer.split('\n');
+					stderrBuffer = lines.pop() || '';
+					lines.forEach((line) => this.addLogLine('stderr', line));
+				});
 			}
 
 			this.process.once('error', (err) => {
 				this.status = 'stopped';
-				this.exitCode = 1;
+				this.code = 1;
 				this.process = null;
 				reject(err);
 			});
 
 			this.process.on('exit', (code) => {
 				this.status = 'stopped';
-				this.exitCode = code;
+				this.code = code;
 				this.process = null;
 			});
 
@@ -97,7 +145,7 @@ export class Process {
 
 			processRef.on('exit', (code) => {
 				clearTimeout(timeout);
-				this.exitCode = code;
+				this.code = code;
 				resolve();
 			});
 
@@ -126,5 +174,15 @@ export class Process {
 		}
 		this.status = 'idle';
 		this.start();
+	}
+
+	/**
+	 * Adds a log line to the logs array and removes the oldest line if the limit is exceeded.
+	 */
+	private addLogLine(type: 'stdout' | 'stderr', line: string): void {
+		this.logs.push({ type, line, time: Date.now() });
+		if (this.logs.length > LOGS_SCROLLBACK) {
+			this.logs.shift();
+		}
 	}
 }
