@@ -8,7 +8,7 @@ export const minecraftServer = z.object({
 	name: z.string(),
 	slug: z.string(),
 	version: z.string(),
-	status: z.enum(['stopped', 'running']),
+	status: z.enum(['idle', 'stopped', 'running']),
 	config: minecraftServerConfigSchema
 });
 

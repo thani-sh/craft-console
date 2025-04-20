@@ -1,4 +1,4 @@
-import { setupNewMinecraftServer } from '$lib/server/game';
+import { GameServer } from '$lib/server/game';
 import { fail, redirect } from '@sveltejs/kit';
 import type { Actions } from './$types';
 
@@ -17,9 +17,9 @@ export const actions: Actions = {
 		if (!file) {
 			fail(400);
 		}
-		// Note: this can take a while
+		// Note: this can take a while, maybe show a progress bar?
 		const name = file.name.slice(0, file.name.length - 4);
-		await setupNewMinecraftServer(name, file);
+		await GameServer.setup(name, file);
 		return redirect(302, '/');
 	}
 };

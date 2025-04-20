@@ -1,4 +1,4 @@
-import { startServer, stopServer } from '$lib/server/game';
+import { getServer, stopServer } from '$lib/server/game';
 import { fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 
@@ -21,7 +21,7 @@ export const actions: Actions = {
 			return fail(401);
 		}
 		console.info(`Starting server: ${event.params.serverSlug}`);
-		startServer(event.params.serverSlug)?.catch((err) => {
+		getServer(event.params.serverSlug)?.catch((err) => {
 			console.error('Failed to start:', err);
 		});
 	},
