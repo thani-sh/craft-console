@@ -11,7 +11,7 @@ env:
 
 jobs:
   build-and-push:
-    name: Build & Push to GitHub Packages
+    name: Build & Publish
     runs-on: ubuntu-latest
     permissions:
       contents: read
