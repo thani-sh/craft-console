@@ -1,20 +1,27 @@
-import { validateFormData } from '$lib/server/utils';
-import { partialMinecraftConfigSchema } from '$lib/types';
-import { fail } from '@sveltejs/kit';
 import type { Actions } from './$types';
+import { setServerConfig } from '$lib/server/minecraft';
+import { minecraftServerConfigSchema, type MinecraftServerConfig } from '$lib/types/MinecraftServerConfig';
 
-/**
- * Actions for the page.
- */
-export const actions: Actions = {
-	/**
-	 * Update server config
-	 */
-	update: async (event) => {
-		if (!event.locals.session) {
-			return fail(401);
+export const actions = {
+	update: async ({ request, params }) => {
+		const slug = params.serverSlug;
+		const formData = await request.formData();
+		
+		const rawData: Record<string, any> = {};
+		for (const [key, value] of formData.entries()) {
+			rawData[key] = value;
 		}
-		const formData = await validateFormData(event, partialMinecraftConfigSchema);
-		console.info(`Updating server config: ${formData}`);
+
+		// We use the partial schema because we only want to update the provided fields
+		// and we also don't want to enforce missing fields.
+		const validation = minecraftServerConfigSchema.partial().safeParse(rawData);
+		
+		if (!validation.success) {
+			console.error("Validation errors updating settings:", validation.error);
+			return { success: false, errors: validation.error.flatten() };
+		}
+		
+		await setServerConfig(slug, validation.data as Partial<MinecraftServerConfig>);
+		return { success: true };
 	}
-};
+} satisfies Actions;

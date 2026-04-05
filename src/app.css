@@ -10,6 +10,10 @@
 		url('/fonts/monocraft.ttf') format('truetype');
 }
 
+* {
+	font-family: 'Monocraft', monospace !important;
+}
+
 body {
 	font-family: 'Monocraft', monospace;
 	letter-spacing: 0.15em;

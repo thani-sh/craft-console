@@ -5,7 +5,6 @@ import { minecraftServerConfigSchema, type MinecraftServerConfig } from './Minec
  * Zod schema for a Minecraft server
  */
 export const minecraftServer = z.object({
-	name: z.string(),
 	slug: z.string(),
 	version: z.string(),
 	status: z.enum(['idle', 'stopped', 'running']),

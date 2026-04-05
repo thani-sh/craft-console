@@ -14,15 +14,11 @@
 		"lint": "prettier --check . && eslint .",
 		"test:unit": "vitest",
 		"test": "npm run test:unit -- --run && npm run test:e2e",
-		"test:e2e": "playwright test",
-		"db:push": "drizzle-kit push",
-		"db:migrate": "drizzle-kit migrate",
-		"db:studio": "drizzle-kit studio"
+		"test:e2e": "playwright test"
 	},
 	"dependencies": {
 		"@eslint/compat": "^1.2.8",
 		"@eslint/js": "^9.25.0",
-		"@libsql/client": "^0.15.4",
 		"@node-rs/argon2": "^2.0.2",
 		"@oslojs/crypto": "^1.0.1",
 		"@oslojs/encoding": "^1.1.0",
@@ -36,8 +32,6 @@
 		"@types/decompress": "^4.2.7",
 		"@types/node": "^22.14.1",
 		"decompress": "^4.2.1",
-		"drizzle-kit": "^0.31.0",
-		"drizzle-orm": "^0.42.0",
 		"eslint": "^9.25.0",
 		"eslint-config-prettier": "^10.1.2",
 		"eslint-plugin-svelte": "^3.5.1",

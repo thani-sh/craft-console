@@ -1,25 +1,41 @@
-import { GameServer } from '$lib/server/game';
 import { fail, redirect } from '@sveltejs/kit';
 import type { Actions } from './$types';
+import decompress from 'decompress';
+import path from 'path';
+import { promises as fs } from 'fs';
 
-/**
- * Actions for the page.
- */
-export const actions: Actions = {
-	/**
-	 * Uploads the Minecraft server zip file.
-	 */
-	upload: async (event) => {
-		if (!event.locals.session) {
-			return fail(401);
+export const actions = {
+	upload: async ({ request }) => {
+		const formData = await request.formData();
+		const file = formData.get('file') as File;
+
+		if (!file || file.size === 0) {
+			return fail(400, { error: 'Please upload a valid zip file.' });
 		}
-		const file = Object.fromEntries(await event.request.formData()).file as File;
-		if (!file) {
-			fail(400);
+
+		if (!file.name.endsWith('.zip')) {
+			return fail(400, { error: 'Must be a .zip file.' });
 		}
-		// Note: this can take a while, maybe show a progress bar?
-		const name = file.name.slice(0, file.name.length - 4);
-		await GameServer.setup(name, file);
-		return redirect(302, '/');
+
+		try {
+			const arrayBuffer = await file.arrayBuffer();
+			const buffer = Buffer.from(arrayBuffer);
+
+			const serverDir = path.join(process.cwd(), 'data', 'servers', 'default');
+			
+			// Optional: delete existing files to prevent conflicts
+			await fs.rm(serverDir, { recursive: true, force: true }).catch(() => {});
+			await fs.mkdir(serverDir, { recursive: true });
+
+			// Decompress to the destination
+			await decompress(buffer, serverDir);
+
+			// Automatically redirect to the server's console after extraction
+		} catch (e: any) {
+			console.error(e);
+			return fail(500, { error: 'Failed to extract the server zip.' });
+		}
+
+		redirect(303, '/servers/default/console');
 	}
-};
+} satisfies Actions;

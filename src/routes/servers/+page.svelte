@@ -13,7 +13,7 @@
 {#snippet serverName(server: MinecraftServer)}
 	<a class="flex flex-col" href="/servers/{server.slug}/">
 		<Heading className="text-4xl mt-4">
-			{server.name}
+			{server.config['server-name']}
 		</Heading>
 		<Heading className="text-xl">
 			(v{server.version})
