@@ -150,3 +150,109 @@ export function writeServerInput(slug: string, input: string) {
 		});
 	}
 }
+
+// ── Allowlist ─────────────────────────────────────────────────────────────────
+
+export type AllowedPlayer = {
+	name: string;
+	xuid?: string;
+	ignoresPlayerLimit: boolean;
+};
+
+function getAllowlistPath(slug: string) {
+	return path.join(getServerDir(slug), 'allowlist.json');
+}
+
+export async function getAllowedPlayers(slug: string): Promise<AllowedPlayer[]> {
+	try {
+		const content = await fs.readFile(getAllowlistPath(slug), 'utf8');
+		return JSON.parse(content) as AllowedPlayer[];
+	} catch {
+		return [];
+	}
+}
+
+export async function addAllowedPlayer(slug: string, player: AllowedPlayer): Promise<void> {
+	const players = await getAllowedPlayers(slug);
+	if (players.some((p) => p.name.toLowerCase() === player.name.toLowerCase())) return;
+	players.push(player);
+	await fs.writeFile(getAllowlistPath(slug), JSON.stringify(players, null, 2), 'utf8');
+	// If server is running, hot-reload the allowlist
+	writeServerInput(slug, 'allowlist reload');
+}
+
+export async function removeAllowedPlayer(slug: string, name: string): Promise<void> {
+	const players = await getAllowedPlayers(slug);
+	const next = players.filter((p) => p.name.toLowerCase() !== name.toLowerCase());
+	await fs.writeFile(getAllowlistPath(slug), JSON.stringify(next, null, 2), 'utf8');
+	writeServerInput(slug, 'allowlist reload');
+}
+
+export type MinecraftWorld = {
+	id: string;
+	name: string;
+	lastModified: number;
+	sizeBytes: number;
+};
+
+async function getDirSize(dirPath: string): Promise<number> {
+	let size = 0;
+	try {
+		const files = await fs.readdir(dirPath, { withFileTypes: true });
+		for (const file of files) {
+			const fullPath = path.join(dirPath, file.name);
+			if (file.isDirectory()) {
+				size += await getDirSize(fullPath);
+			} else {
+				const stat = await fs.stat(fullPath);
+				size += stat.size;
+			}
+		}
+	} catch (e) {
+		// Ignore
+	}
+	return size;
+}
+
+export async function getAvailableWorlds(slug: string): Promise<MinecraftWorld[]> {
+	const worldsDir = path.join(getServerDir(slug), 'worlds');
+	const worlds: MinecraftWorld[] = [];
+
+	try {
+		const folders = await fs.readdir(worldsDir, { withFileTypes: true });
+		for (const folder of folders) {
+			if (!folder.isDirectory()) continue;
+			
+			const worldPath = path.join(worldsDir, folder.name);
+			let name = folder.name;
+			let lastModified = 0;
+			
+			// Try to read levelname.txt
+			try {
+				const levelnamePath = path.join(worldPath, 'levelname.txt');
+				const content = await fs.readFile(levelnamePath, 'utf8');
+				if (content.trim()) {
+					name = content.trim();
+				}
+				const stat = await fs.stat(worldPath);
+				lastModified = stat.mtimeMs;
+			} catch (e) {
+				const stat = await fs.stat(worldPath);
+				lastModified = stat.mtimeMs;
+			}
+
+			const sizeBytes = await getDirSize(worldPath);
+
+			worlds.push({
+				id: folder.name,
+				name,
+				lastModified,
+				sizeBytes
+			});
+		}
+	} catch (e) {
+		// Worlds dir might not exist yet
+	}
+
+	return worlds.sort((a, b) => b.lastModified - a.lastModified);
+}
