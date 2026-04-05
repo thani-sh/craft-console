@@ -1,0 +1,23 @@
+.git
+.github
+.svelte-kit
+.vscode
+build
+node_modules
+data/servers
+
+# Env files
+.env
+.env.*
+!.env.example
+
+# Dev / test files
+e2e
+test-results
+*.spec.ts
+playwright.config.ts
+vitest-setup-client.ts
+
+# Misc
+.DS_Store
+*.log
