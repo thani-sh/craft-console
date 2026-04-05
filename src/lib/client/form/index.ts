@@ -1,4 +1,3 @@
-import 'zod-metadata/register';
 import { z } from 'zod';
 
 /**
@@ -48,64 +47,73 @@ export type FormControlDef =
 	| BooleanFormControlDef;
 
 /**
- * Get the type name of a zod schema ignoring optional, default, etc.
+ * Unwrap a zod schema, stripping Optional, Default, and Pipe (preprocess) wrappers,
+ * returning the innermost concrete schema instance.
  */
-function getDefinition(
-	root: z.ZodSchema
-): z.ZodEnumDef | z.ZodNumberDef | z.ZodStringDef | z.ZodBooleanDef {
-	let schema = root;
+function unwrap(root: z.ZodType): z.ZodType {
+	let schema: z.ZodType = root;
 	while (true) {
 		if (schema instanceof z.ZodOptional) {
-			schema = schema._def.innerType;
+			schema = schema._def.innerType as z.ZodType;
 		} else if (schema instanceof z.ZodDefault) {
-			schema = schema._def.innerType;
-		} else if (schema instanceof z.ZodEffects) {
-			schema = schema._def.schema;
+			schema = schema._def.innerType as z.ZodType;
+		} else if (schema instanceof z.ZodPipe) {
+			// z.preprocess() produces a ZodPipe; the output schema is in _def.out
+			schema = schema._def.out as z.ZodType;
 		} else {
-			return schema._def as z.ZodEnumDef | z.ZodNumberDef | z.ZodStringDef | z.ZodBooleanDef;
+			return schema;
 		}
 	}
 }
 
 /**
+ * Get the description metadata for a schema from the global registry.
+ */
+function getDescription(schema: z.ZodType): string | undefined {
+	return z.globalRegistry.get(schema)?.description;
+}
+
+/**
  * Convert a zod schema to a form control.
  */
-export function formControlfromZodSchema(name: string, schema: z.ZodSchema): FormControlDef {
-	const def = getDefinition(schema);
-	if (def.typeName === z.ZodFirstPartyTypeKind.ZodEnum) {
+export function formControlfromZodSchema(name: string, schema: z.ZodType): FormControlDef {
+	const inner = unwrap(schema);
+	const description = getDescription(schema);
+
+	if (inner instanceof z.ZodEnum) {
 		return {
 			type: 'enum',
-			name: name,
+			name,
 			label: name,
-			description: schema.getMeta()?.description,
+			description,
 			required: !schema.isOptional(),
-			options: [...def.values]
+			options: inner.options.map((o) => o.toString())
 		};
-	} else if (def.typeName === z.ZodFirstPartyTypeKind.ZodNumber) {
+	} else if (inner instanceof z.ZodNumber) {
 		return {
 			type: 'number',
-			name: name,
+			name,
 			label: name,
-			description: schema.getMeta()?.description,
+			description,
 			required: !schema.isOptional(),
-			integer: !!def.checks.find((c) => c.kind === 'int'),
-			min: def.checks.find((c) => c.kind === 'min')?.value,
-			max: def.checks.find((c) => c.kind === 'max')?.value
+			integer: inner.isInt ?? false,
+			min: inner.minValue ?? undefined,
+			max: inner.maxValue ?? undefined
 		};
-	} else if (def.typeName === z.ZodFirstPartyTypeKind.ZodBoolean) {
+	} else if (inner instanceof z.ZodBoolean) {
 		return {
 			type: 'boolean',
-			name: name,
+			name,
 			label: name,
-			description: schema.getMeta()?.description,
+			description,
 			required: !schema.isOptional()
 		};
 	}
 	return {
 		type: 'text',
-		name: name,
+		name,
 		label: name,
-		description: schema.getMeta()?.description,
+		description,
 		required: !schema.isOptional()
 	};
 }

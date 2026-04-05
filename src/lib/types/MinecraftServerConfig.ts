@@ -1,17 +1,11 @@
-import zod, * as z from 'zod';
-import { register } from 'zod-metadata';
+import * as z from 'zod';
 import { formControlfromZodSchema } from '../client/form';
-
-/**
- * Register zod metadata
- */
-register(zod);
 
 /**
  * Define zod metadata
  */
 declare module 'zod' {
-	interface ZodMeta {
+	interface GlobalMeta {
 		description?: string;
 	}
 }
@@ -35,7 +29,7 @@ export const minecraftServerConfigSchema = z.object({
 	'force-gamemode': z
 		.preprocess((value) => String(value).toLowerCase() === 'true', z.boolean())
 		.optional()
-		.default('false')
+		.default(false)
 		.meta({
 			description:
 				'force-gamemode=false (or force-gamemode is not defined in the server.properties) ' +
@@ -52,7 +46,7 @@ export const minecraftServerConfigSchema = z.object({
 	}),
 	'allow-cheats': z
 		.preprocess((value) => String(value).toLowerCase() === 'true', z.boolean())
-		.default('false')
+		.default(false)
 		.meta({
 			description:
 				'If true then cheats like commands can be used.<br />Allowed values: "true" or "false"'
@@ -66,7 +60,7 @@ export const minecraftServerConfigSchema = z.object({
 		}),
 	'online-mode': z
 		.preprocess((value) => String(value).toLowerCase() === 'true', z.boolean())
-		.default('true')
+		.default(true)
 		.meta({
 			description:
 				'If true then all connected players must be authenticated to Xbox Live.<br />' +
@@ -77,7 +71,7 @@ export const minecraftServerConfigSchema = z.object({
 		}),
 	'allow-list': z
 		.preprocess((value) => String(value).toLowerCase() === 'true', z.boolean())
-		.default('false')
+		.default(false)
 		.meta({
 			description:
 				'If true then all connected players must be listed in the separate allowlist.json file.<br />Allowed values: "true" or "false"'
@@ -98,7 +92,7 @@ export const minecraftServerConfigSchema = z.object({
 		}),
 	'enable-lan-visibility': z
 		.preprocess((value) => String(value).toLowerCase() === 'true', z.boolean())
-		.default('false')
+		.default(false)
 		.meta({
 			description:
 				'Listen and respond to clients that are looking for servers on the LAN. This will cause ' +
@@ -156,14 +150,14 @@ export const minecraftServerConfigSchema = z.object({
 		}),
 	'texturepack-required': z
 		.preprocess((value) => String(value).toLowerCase() === 'true', z.boolean())
-		.default('false')
+		.default(false)
 		.meta({
 			description:
 				'Force clients to use texture packs in the current world<br />Allowed values: "true" or "false"'
 		}),
 	'content-log-file-enabled': z
 		.preprocess((value) => String(value).toLowerCase() === 'true', z.boolean())
-		.default('false')
+		.default(false)
 		.meta({
 			description: 'Enables logging content errors to a file<br />Allowed values: "true" or "false"'
 		}),
@@ -238,7 +232,7 @@ export const minecraftServerConfigSchema = z.object({
 		}),
 	'disable-player-interaction': z
 		.preprocess((value) => String(value).toLowerCase() === 'true', z.boolean())
-		.default('false')
+		.default(false)
 		.meta({
 			description:
 				'If true, the server will inform clients that they should ignore other players when ' +
@@ -246,7 +240,7 @@ export const minecraftServerConfigSchema = z.object({
 		}),
 	'client-side-chunk-generation-enabled': z
 		.preprocess((value) => String(value).toLowerCase() === 'true', z.boolean())
-		.default('true')
+		.default(true)
 		.meta({
 			description:
 				'If true, the server will inform clients that they have the ability to generate visual ' +
@@ -254,7 +248,7 @@ export const minecraftServerConfigSchema = z.object({
 		}),
 	'block-network-ids-are-hashes': z
 		.preprocess((value) => String(value).toLowerCase() === 'true', z.boolean())
-		.default('true')
+		.default(true)
 		.meta({
 			description:
 				"If true, the server will send hashed block network ID's instead of id's that start " +
@@ -262,13 +256,13 @@ export const minecraftServerConfigSchema = z.object({
 		}),
 	'disable-persona': z
 		.preprocess((value) => String(value).toLowerCase() === 'true', z.boolean())
-		.default('false')
+		.default(false)
 		.meta({
 			description: 'Internal Use Only'
 		}),
 	'disable-custom-skins': z
 		.preprocess((value) => String(value).toLowerCase() === 'true', z.boolean())
-		.default('false')
+		.default(false)
 		.meta({
 			description:
 				'If true, disable players customized skins that were customized outside of the ' +
@@ -292,14 +286,14 @@ export const minecraftServerConfigSchema = z.object({
 		}),
 	'allow-outbound-script-debugging': z
 		.preprocess((value) => String(value).toLowerCase() === 'true', z.boolean())
-		.default('false')
+		.default(false)
 		.meta({
 			description:
 				"Allows script debugger 'connect' command and script-debugger-auto-attach=connect mode."
 		}),
 	'allow-inbound-script-debugging': z
 		.preprocess((value) => String(value).toLowerCase() === 'true', z.boolean())
-		.default('false')
+		.default(false)
 		.meta({
 			description:
 				"Allows script debugger 'listen' command and script-debugger-auto-attach=listen mode."

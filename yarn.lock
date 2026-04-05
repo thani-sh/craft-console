@@ -1338,7 +1338,6 @@ __metadata:
     vite: "npm:^8.0.3"
     vitest: "npm:^4.1.2"
     zod: "npm:^4.3.6"
-    zod-metadata: "npm:^1.1.2"
   languageName: unknown
   linkType: soft
 
@@ -4895,15 +4894,6 @@ __metadata:
   version: 1.1.2
   resolution: "zimmerframe@npm:1.1.2"
   checksum: 10c0/8f693609c31cbb4449db223acd61661bc93b73e615f9db6fb8c86d4ceea84ca54cbbeebcf53cf74c22a1f923b92abd18e97988a5e175c76b6ab17238e5593a9d
-  languageName: node
-  linkType: hard
-
-"zod-metadata@npm:^1.1.2":
-  version: 1.1.2
-  resolution: "zod-metadata@npm:1.1.2"
-  peerDependencies:
-    zod: ^3.21.2
-  checksum: 10c0/bbe600259479b884a9f44c661bda3eee11bdd94ff7a64e4ecc37956e505ee2bdf9de1fb6eb5c2db43b37921f32962a1b122518e4e8abb5775a32988239193f44
   languageName: node
   linkType: hard
 
