@@ -2,6 +2,8 @@
 
 A web-based management console for Minecraft Bedrock servers. Upload and run server binaries, view real-time logs, and edit `server.properties` — all from a browser.
 
+![screenshot](docs/screenshot.png)
+
 ---
 
 ## Getting Started
