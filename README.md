@@ -51,6 +51,8 @@ A Docker image is automatically published to GitHub Container Registry on every 
 ```bash
 docker run -d \
   -p 3000:3000 \
+  -p 19132:19132/udp \
+  -p 19133:19133/udp \
   -e ADMIN_USER=admin \
   -e ADMIN_PASS=secret \
   -v /path/to/data:/app/data \

@@ -1,5 +1,5 @@
 # ── Stage 1: build ─────────────────────────────────────────────────────────────
-FROM node:24-alpine AS builder
+FROM node:24-bookworm-slim AS builder
 
 WORKDIR /app
 
@@ -15,13 +15,16 @@ RUN yarn build
 RUN yarn workspaces focus --production 2>/dev/null || yarn install --frozen-lockfile --production 2>/dev/null || true
 
 # ── Stage 2: production ────────────────────────────────────────────────────────
-FROM node:24-alpine AS production
+FROM node:24-bookworm-slim AS production
 
 WORKDIR /app
 
 ENV NODE_ENV=production
 ENV PORT=3000
 ENV HOST=0.0.0.0
+
+# Install dependencies for Minecraft Bedrock Server (libcurl4)
+RUN apt-get update && apt-get install -y libcurl4 && rm -rf /var/lib/apt/lists/*
 
 # Copy built output from builder
 COPY --from=builder /app/build ./build
@@ -32,5 +35,7 @@ COPY --from=builder /app/package.json ./package.json
 RUN mkdir -p /app/data/servers
 
 EXPOSE 3000
+EXPOSE 19132/udp
+EXPOSE 19133/udp
 
 CMD ["node", "build/index.js"]
