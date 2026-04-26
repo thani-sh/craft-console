@@ -17,7 +17,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 		redirect(302, '/auth');
 	}
 
-	if (user && pathname === '/auth') {
+	if (user && pathname === '/auth' && event.request.method === 'GET') {
 		redirect(302, '/servers');
 	}
 
