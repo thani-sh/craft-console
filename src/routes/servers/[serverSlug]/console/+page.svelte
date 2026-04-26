@@ -3,7 +3,7 @@
 	import { page } from '$app/state';
 	import { enhance } from '$app/forms';
 	import { Button, Input } from '$lib/client/ui';
-	import { Play, Square } from 'lucide-svelte';
+	import { Play, Square, RefreshCw } from 'lucide-svelte';
 	import type { PageProps } from './$types';
 	import { getLogs } from './logs.remote';
 
@@ -16,7 +16,6 @@
 	};
 
 	let logs: ProcessLogLine[] = $state([]);
-	let interval: ReturnType<typeof setInterval>;
 	let consoleContainer: HTMLDivElement;
 	let slug = $derived(page.url.pathname.split('/')[2]);
 
@@ -25,7 +24,7 @@
 	const fetchLogs = async () => {
 		if (!slug) return;
 		try {
-			const newLogs = await getLogs(slug).run();
+			const newLogs = await getLogs(slug);
 			if (newLogs && newLogs.length !== logs.length) {
 				logs = newLogs;
 				requestAnimationFrame(() => {
@@ -41,11 +40,6 @@
 
 	onMount(() => {
 		fetchLogs();
-		interval = setInterval(fetchLogs, 3000);
-	});
-
-	onDestroy(() => {
-		clearInterval(interval);
 	});
 </script>
 
@@ -59,13 +53,14 @@
 		</div>
 
 		<div class="flex gap-2">
+			<Button onclick={fetchLogs} icon={RefreshCw} className="bg-zinc-700 hover:bg-zinc-600" />
 			{#if data.server.status !== 'running'}
 				<form method="post" action="?/start" use:enhance>
-					<Button type="submit" icon={Play} className="bg-green-600 hover:bg-green-500">Start Server</Button>
+					<Button type="submit" icon={Play} className="bg-green-600 hover:bg-green-500" />
 				</form>
 			{:else}
 				<form method="post" action="?/stop" use:enhance>
-					<Button type="submit" icon={Square} className="bg-red-600 hover:bg-red-500">Stop Server</Button>
+					<Button type="submit" icon={Square} className="bg-red-600 hover:bg-red-500" />
 				</form>
 			{/if}
 		</div>
