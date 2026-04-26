@@ -25,7 +25,7 @@
 	const fetchLogs = async () => {
 		if (!slug) return;
 		try {
-			const newLogs = await getLogs(slug);
+			const newLogs = await getLogs(slug).run();
 			if (newLogs && newLogs.length !== logs.length) {
 				logs = newLogs;
 				requestAnimationFrame(() => {
