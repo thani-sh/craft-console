@@ -16,6 +16,7 @@
 	};
 
 	let logs: ProcessLogLine[] = $state([]);
+	let logsInterval: ReturnType<typeof setInterval>;
 	let consoleContainer: HTMLDivElement;
 	let slug = $derived(page.url.pathname.split('/')[2]);
 
@@ -24,7 +25,7 @@
 	const fetchLogs = async () => {
 		if (!slug) return;
 		try {
-			const newLogs = await getLogs(slug);
+			const newLogs = await getLogs(slug).run();
 			if (newLogs && newLogs.length !== logs.length) {
 				logs = newLogs;
 				requestAnimationFrame(() => {
@@ -39,7 +40,13 @@
 	};
 
 	onMount(() => {
-		fetchLogs();
+		logsInterval = setInterval(fetchLogs, 5000);
+	});
+
+	onDestroy(() => {
+		if (logsInterval) {
+			clearInterval(logsInterval);
+		}
 	});
 </script>
 
