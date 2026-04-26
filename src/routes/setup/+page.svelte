@@ -7,7 +7,7 @@
 <Heading>Setup a new server</Heading>
 <Text>
 	Upload the Minecraft Bedrock server zip file.<br />
-	You can download it from
+	You can download it from the
 	<a class="underline" href="https://www.minecraft.net/en-us/download/server/bedrock"> minecraft</a>
 	website
 </Text>
