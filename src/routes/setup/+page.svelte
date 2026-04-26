@@ -1,7 +1,9 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import { Button, Heading, Input, Text } from '$lib/client/ui';
-	import { Upload } from 'lucide-svelte';
+	import { Upload, Loader2 } from 'lucide-svelte';
+
+	let isUploading = $state(false);
 </script>
 
 <Heading>Setup a new server</Heading>
@@ -17,8 +19,21 @@
 	action="?/upload"
 	enctype="multipart/form-data"
 	class="mt-8 flex w-full flex-col lg:w-2xl"
-	use:enhance
+	use:enhance={() => {
+		isUploading = true;
+		return async ({ update }) => {
+			await update();
+			isUploading = false;
+		};
+	}}
 >
 	<Input id="file" label="Choose file:" type="file" accept=".zip" />
-	<Button type="submit" icon={Upload} className="">Upload</Button>
+	<Button
+		type="submit"
+		disabled={isUploading}
+		icon={isUploading ? Loader2 : Upload}
+		className={isUploading ? 'animate-pulse' : ''}
+	>
+		{isUploading ? 'Uploading and Extracting...' : 'Upload'}
+	</Button>
 </form>
