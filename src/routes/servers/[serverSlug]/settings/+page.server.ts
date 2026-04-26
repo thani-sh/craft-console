@@ -9,7 +9,11 @@ export const actions = {
 		
 		const rawData: Record<string, any> = {};
 		for (const [key, value] of formData.entries()) {
-			rawData[key] = value;
+			// Skip empty strings so optional fields are treated as absent by Zod
+			// (e.g. optional numeric fields would otherwise preprocess "" → NaN/0 and fail min() checks)
+			if (value !== '') {
+				rawData[key] = value;
+			}
 		}
 
 		// We use the partial schema because we only want to update the provided fields

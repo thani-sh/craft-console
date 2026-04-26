@@ -25,15 +25,11 @@
 	};
 
 	// Note: remove any unmodified fields from the form data
-	const prepare: SubmitFunction = (input) => {
-		input.formData
-			.keys()
-			.filter((key) => !(key in changes))
-			.map((key) => {
-				console.log('deleting key', key);
-				return key;
-			})
-			.forEach((key) => input.formData.delete(key));
+	const prepare: SubmitFunction = ({ formData }) => {
+		const keysToDelete = Array.from(formData.keys()).filter((key) => !(key in changes));
+		for (const key of keysToDelete) {
+			formData.delete(key);
+		}
 	};
 </script>
 
