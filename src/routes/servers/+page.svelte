@@ -11,7 +11,7 @@
 
 <!-- Snippet to render server name and version -->
 {#snippet serverName(server: MinecraftServer)}
-	<a class="flex flex-col" href="/servers/{server.slug}/">
+	<a class="flex flex-col" href="/servers/{server.slug}/console">
 		<Heading className="text-4xl mt-4">
 			{server.config['server-name']}
 		</Heading>
