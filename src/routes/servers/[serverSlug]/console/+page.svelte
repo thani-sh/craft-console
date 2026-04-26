@@ -5,6 +5,7 @@
 	import { Button, Input } from '$lib/client/ui';
 	import { Play, Square } from 'lucide-svelte';
 	import type { PageProps } from './$types';
+	import { getLogs } from './logs.remote';
 
 	let { data }: PageProps = $props();
 
@@ -18,33 +19,20 @@
 	let interval: ReturnType<typeof setInterval>;
 	let consoleContainer: HTMLDivElement;
 	let slug = $derived(page.url.pathname.split('/')[2]);
-	
+
 	let commandInput = $state('');
 
 	const fetchLogs = async () => {
 		if (!slug) return;
 		try {
-			const formData = new FormData();
-			const res = await fetch(`?/logs`, {
-				method: 'POST',
-				body: formData,
-				headers: {
-					'x-sveltekit-action': 'true'
-				}
-			});
-			if (res.ok) {
-				const result = await res.json();
-				if (result.type === 'success' && result.data?.logs) {
-					const newLogs = result.data.logs;
-					if (newLogs.length !== logs.length) {
-						logs = newLogs;
-						requestAnimationFrame(() => {
-							if (consoleContainer) {
-								consoleContainer.scrollTop = consoleContainer.scrollHeight;
-							}
-						});
+			const newLogs = await getLogs(slug);
+			if (newLogs && newLogs.length !== logs.length) {
+				logs = newLogs;
+				requestAnimationFrame(() => {
+					if (consoleContainer) {
+						consoleContainer.scrollTop = consoleContainer.scrollHeight;
 					}
-				}
+				});
 			}
 		} catch (err) {
 			console.error('Failed to fetch logs:', err);
@@ -53,7 +41,7 @@
 
 	onMount(() => {
 		fetchLogs();
-		interval = setInterval(fetchLogs, 1000);
+		interval = setInterval(fetchLogs, 3000);
 	});
 
 	onDestroy(() => {

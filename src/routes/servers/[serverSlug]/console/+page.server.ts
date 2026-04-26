@@ -1,12 +1,8 @@
 import type { Actions } from './$types';
-import { getServerLogs, startServer, stopServer, writeServerInput } from '$lib/server/minecraft';
+import { startServer, stopServer, writeServerInput } from '$lib/server/minecraft';
 
 export const actions = {
-	logs: async ({ params }) => {
-		const slug = params.serverSlug;
-		const logs = getServerLogs(slug);
-		return { logs };
-	},
+
 	
 	start: async ({ params }) => {
 		const slug = params.serverSlug;
