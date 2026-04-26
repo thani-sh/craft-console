@@ -67,7 +67,7 @@
 	</div>
 
 	<div class="relative flex flex-1 w-full flex-col overflow-hidden rounded bg-zinc-950 p-4 font-mono text-sm text-white shadow-inner">
-		<div class="absolute right-4 top-2 text-xs text-zinc-500">Live Console</div>
+		<div class="absolute right-4 top-2 text-xs text-zinc-500">Console</div>
 		<div bind:this={consoleContainer} class="mt-4 flex flex-1 flex-col overflow-y-auto break-all pb-2">
 			{#if logs.length === 0}
 				<div class="text-zinc-600 italic">No logs available. Start the server to see output.</div>
