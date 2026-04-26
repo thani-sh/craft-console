@@ -1,11 +1,10 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
 	import { Button, Heading } from '$lib/client/ui';
 	import { minecraftServerConfigControls, type MinecraftServerConfig } from '$lib/types';
 	import { SaveIcon } from 'lucide-svelte';
 	import type { PageProps } from './$types';
 	import FormControl from './(components)/FormControl.svelte';
-	import type { SubmitFunction } from '@sveltejs/kit';
+	import { updateServerConfig } from './settings.remote';
 
 	let { data }: PageProps = $props();
 
@@ -24,28 +23,24 @@
 		changes[name] = value;
 	};
 
-	// Note: remove any unmodified fields from the form data
-	const prepare: SubmitFunction = ({ formData }) => {
-		const keysToDelete = Array.from(formData.keys()).filter((key) => !(key in changes));
-		for (const key of keysToDelete) {
-			formData.delete(key);
-		}
+	// Note: save only the changed fields to the server
+	const save = async () => {
+		await updateServerConfig({ slug: data.server.slug, changes });
+		changes = {};
 	};
 </script>
 
-<form method="post" action="?/update" use:enhance={prepare}>
-	<div class="mb-32 flex w-full flex-1 flex-col">
-		<Heading>Server Configurations</Heading>
-		<section class="flex w-full flex-col gap-8 md:mt-8 md:gap-16">
-			{#each minecraftServerConfigControls as def}
-				{@const name = def.name as keyof MinecraftServerConfig}
-				<FormControl {def} value={config[name]} onchange={(val) => set(name, val)} />
-			{/each}
-		</section>
-	</div>
-	{#if modified}
-		<footer class="fixed right-0 bottom-0 left-0 flex justify-end bg-green-900 p-2 text-white">
-			<Button type="submit" icon={SaveIcon} />
-		</footer>
-	{/if}
-</form>
+<div class="mb-32 flex w-full flex-1 flex-col">
+	<Heading>Server Configurations</Heading>
+	<section class="flex w-full flex-col gap-8 md:mt-8 md:gap-16">
+		{#each minecraftServerConfigControls as def}
+			{@const name = def.name as keyof MinecraftServerConfig}
+			<FormControl {def} value={config[name]} onchange={(val) => set(name, val)} />
+		{/each}
+	</section>
+</div>
+{#if modified}
+	<footer class="fixed right-0 bottom-0 left-0 flex justify-end bg-green-900 p-2 text-white">
+		<Button onclick={save} icon={SaveIcon} />
+	</footer>
+{/if}
