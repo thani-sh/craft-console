@@ -1,4 +1,7 @@
-import type { MinecraftServerConfig, MinecraftServerConfigKey } from '$lib/types/MinecraftServerConfig';
+import type {
+	MinecraftServerConfig,
+	MinecraftServerConfigKey
+} from '$lib/types/MinecraftServerConfig';
 
 /**
  * Parses a Minecraft server.properties file string into a Record.
@@ -28,7 +31,10 @@ export function parseProperties(content: string): Partial<MinecraftServerConfig>
 /**
  * Stringifies a MinecraftServerConfig object back to the server.properties format.
  */
-export function writeProperties(config: Partial<MinecraftServerConfig>, originalContent = ''): string {
+export function writeProperties(
+	config: Partial<MinecraftServerConfig>,
+	originalContent = ''
+): string {
 	const lines = originalContent.split('\n');
 	const configKeysHandled = new Set<string>();
 	const newLines: string[] = [];

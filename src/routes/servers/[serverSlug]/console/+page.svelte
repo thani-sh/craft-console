@@ -54,8 +54,10 @@
 	<div class="flex items-center justify-between">
 		<div class="flex items-center gap-4">
 			<div class="text-xl font-bold text-white">Server Engine</div>
-			<div class="text-sm font-medium uppercase px-2 py-1 rounded bg-zinc-800 text-zinc-300">
-				Status: <span class="{data.server.status === 'running' ? 'text-green-400' : 'text-red-400'}">{data.server.status}</span>
+			<div class="rounded bg-zinc-800 px-2 py-1 text-sm font-medium text-zinc-300 uppercase">
+				Status: <span class={data.server.status === 'running' ? 'text-green-400' : 'text-red-400'}
+					>{data.server.status}</span
+				>
 			</div>
 		</div>
 
@@ -73,14 +75,23 @@
 		</div>
 	</div>
 
-	<div class="relative flex flex-1 w-full flex-col overflow-hidden rounded bg-zinc-950 p-4 font-mono text-sm text-white shadow-inner">
-		<div class="absolute right-4 top-2 text-xs text-zinc-500">Console</div>
-		<div bind:this={consoleContainer} class="mt-4 flex flex-1 flex-col overflow-y-auto break-all pb-2">
+	<div
+		class="relative flex w-full flex-1 flex-col overflow-hidden rounded bg-zinc-950 p-4 font-mono text-sm text-white shadow-inner"
+	>
+		<div class="absolute top-2 right-4 text-xs text-zinc-500">Console</div>
+		<div
+			bind:this={consoleContainer}
+			class="mt-4 flex flex-1 flex-col overflow-y-auto pb-2 break-all"
+		>
 			{#if logs.length === 0}
 				<div class="text-zinc-600 italic">No logs available. Start the server to see output.</div>
 			{:else}
 				{#each logs as log}
-					<div class="flex flex-row whitespace-pre-wrap py-0.5 {log.type === 'stderr' ? 'text-red-400' : ''}">
+					<div
+						class="flex flex-row py-0.5 whitespace-pre-wrap {log.type === 'stderr'
+							? 'text-red-400'
+							: ''}"
+					>
 						<span>{log.line}</span>
 					</div>
 				{/each}
@@ -88,15 +99,25 @@
 		</div>
 	</div>
 
-	<form method="post" action="?/input" use:enhance={() => {
-		const temp = commandInput;
-		commandInput = '';
-		return async ({ update }) => {
-			await update({ reset: false });
-		}
-	}} class="flex w-full flex-row gap-2">
-		<div class="flex-1 w-full">
-			<Input id="command" value={commandInput} onchange={(v) => commandInput = v as string} placeholder="Enter server command (e.g. op username)" />
+	<form
+		method="post"
+		action="?/input"
+		use:enhance={() => {
+			const temp = commandInput;
+			commandInput = '';
+			return async ({ update }) => {
+				await update({ reset: false });
+			};
+		}}
+		class="flex w-full flex-row gap-2"
+	>
+		<div class="w-full flex-1">
+			<Input
+				id="command"
+				value={commandInput}
+				onchange={(v) => (commandInput = v as string)}
+				placeholder="Enter server command (e.g. op username)"
+			/>
 		</div>
 		<Button type="submit">Send</Button>
 	</form>

@@ -2,8 +2,6 @@ import type { Actions } from './$types';
 import { startServer, stopServer, writeServerInput } from '$lib/server/minecraft';
 
 export const actions = {
-
-	
 	start: async ({ params }) => {
 		const slug = params.serverSlug;
 		await startServer(slug);
@@ -20,11 +18,11 @@ export const actions = {
 		const slug = params.serverSlug;
 		const formData = await request.formData();
 		const command = formData.get('command')?.toString();
-		
+
 		if (command) {
 			writeServerInput(slug, command);
 		}
-		
+
 		return { success: true };
 	}
 } satisfies Actions;

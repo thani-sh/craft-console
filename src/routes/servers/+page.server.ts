@@ -7,7 +7,7 @@ import type { MinecraftServer } from '$lib/types';
 
 export const load: PageServerLoad = async () => {
 	const serversDir = path.join(process.cwd(), 'data', 'servers');
-	
+
 	let serverSlugs: string[] = [];
 	try {
 		serverSlugs = fs.readdirSync(serversDir);
@@ -18,13 +18,13 @@ export const load: PageServerLoad = async () => {
 	if (serverSlugs.length === 0) {
 		redirect(302, '/setup');
 	}
-	
+
 	const servers: MinecraftServer[] = [];
 	for (const slug of serverSlugs) {
 		if (!fs.statSync(path.join(serversDir, slug)).isDirectory()) continue;
 		const config = await getServerConfig(slug);
 		const status = getServerStatus(slug);
-		
+
 		servers.push({
 			slug,
 			version: '1.0.0',

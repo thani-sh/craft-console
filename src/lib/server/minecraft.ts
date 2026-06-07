@@ -1,7 +1,10 @@
 import { spawn, type ChildProcess } from 'child_process';
 import { promises as fs } from 'fs';
 import path from 'path';
-import { minecraftServerConfigSchema, type MinecraftServerConfig } from '$lib/types/MinecraftServerConfig';
+import {
+	minecraftServerConfigSchema,
+	type MinecraftServerConfig
+} from '$lib/types/MinecraftServerConfig';
 import { parseProperties, writeProperties } from './properties';
 
 export type ProcessLogLine = {
@@ -24,7 +27,7 @@ function getServerDir(slug: string) {
 export async function getServerConfig(slug: string): Promise<MinecraftServerConfig> {
 	const serverDir = getServerDir(slug);
 	const propsPath = path.join(serverDir, 'server.properties');
-	
+
 	let content = '';
 	try {
 		content = await fs.readFile(propsPath, 'utf8');
@@ -40,7 +43,7 @@ export async function getServerConfig(slug: string): Promise<MinecraftServerConf
 export async function setServerConfig(slug: string, configUpdates: Partial<MinecraftServerConfig>) {
 	const serverDir = getServerDir(slug);
 	const propsPath = path.join(serverDir, 'server.properties');
-	
+
 	let content = '';
 	try {
 		content = await fs.readFile(propsPath, 'utf8');
@@ -56,7 +59,7 @@ export async function setServerConfig(slug: string, configUpdates: Partial<Minec
 export function getServerStatus(slug: string): 'idle' | 'stopped' | 'running' {
 	const instance = instances[slug];
 	if (!instance) return 'idle';
-	return (instance.process && instance.process.exitCode === null) ? 'running' : 'stopped';
+	return instance.process && instance.process.exitCode === null ? 'running' : 'stopped';
 }
 
 export function getServerLogs(slug: string): ProcessLogLine[] {
@@ -67,7 +70,7 @@ export async function startServer(slug: string) {
 	if (getServerStatus(slug) === 'running') return;
 
 	const serverDir = getServerDir(slug);
-	
+
 	// Create executable path. For Mac/Linux it's bedrock_server. For Windows it's bedrock_server.exe
 	const isWin = process.platform === 'win32';
 	const exeName = isWin ? 'bedrock_server.exe' : 'bedrock_server';
@@ -134,7 +137,7 @@ export function stopServer(slug: string) {
 	if (instance && instance.process) {
 		// Gracefully stop the bedrock server
 		instance.process.stdin?.write('stop\n');
-		// We could also kill it if it doesn't stop after a timeout, 
+		// We could also kill it if it doesn't stop after a timeout,
 		// but standard 'stop' command works for Bedrock.
 	}
 }
@@ -222,11 +225,11 @@ export async function getAvailableWorlds(slug: string): Promise<MinecraftWorld[]
 		const folders = await fs.readdir(worldsDir, { withFileTypes: true });
 		for (const folder of folders) {
 			if (!folder.isDirectory()) continue;
-			
+
 			const worldPath = path.join(worldsDir, folder.name);
 			let name = folder.name;
 			let lastModified = 0;
-			
+
 			// Try to read levelname.txt
 			try {
 				const levelnamePath = path.join(worldPath, 'levelname.txt');

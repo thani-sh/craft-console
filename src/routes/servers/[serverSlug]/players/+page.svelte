@@ -23,13 +23,18 @@
 			</div>
 		{/if}
 
-		<form method="post" action="?/add" use:enhance={() => {
-			return async ({ update }) => {
-				playerName = '';
-				ignoresPlayerLimit = false;
-				await update();
-			};
-		}} class="flex flex-col gap-6">
+		<form
+			method="post"
+			action="?/add"
+			use:enhance={() => {
+				return async ({ update }) => {
+					playerName = '';
+					ignoresPlayerLimit = false;
+					await update();
+				};
+			}}
+			class="flex flex-col gap-6"
+		>
 			<div class="flex flex-col gap-4 md:flex-row md:items-end">
 				<div class="flex-1">
 					<Input
@@ -58,7 +63,7 @@
 	<!-- Player list -->
 	<div class="flex flex-col gap-0 border-4 border-zinc-700">
 		{#if data.players.length === 0}
-			<div class="bg-zinc-900 p-8 text-center w-full">
+			<div class="w-full bg-zinc-900 p-8 text-center">
 				<Text>No players on the allowlist.</Text>
 				<Text className="text-zinc-400 mt-2 text-sm">
 					Add a player above, or disable allow-list in Settings to let anyone join.
@@ -73,7 +78,9 @@
 				>
 					<div class="flex items-center gap-4">
 						<!-- Pixel-art style avatar placeholder -->
-						<div class="h-10 w-10 shrink-0 border-2 border-zinc-600 bg-zinc-700 flex items-center justify-center">
+						<div
+							class="flex h-10 w-10 shrink-0 items-center justify-center border-2 border-zinc-600 bg-zinc-700"
+						>
 							<span class="text-xs font-bold text-white">{player.name[0].toUpperCase()}</span>
 						</div>
 						<div class="flex flex-col">
@@ -83,7 +90,9 @@
 							{/if}
 						</div>
 						{#if player.ignoresPlayerLimit}
-							<span class="flex items-center gap-1 border-2 border-yellow-600 bg-yellow-900 px-2 py-0.5 text-xs text-yellow-300">
+							<span
+								class="flex items-center gap-1 border-2 border-yellow-600 bg-yellow-900 px-2 py-0.5 text-xs text-yellow-300"
+							>
 								<ShieldCheck class="h-3 w-3" />
 								VIP
 							</span>
@@ -92,7 +101,11 @@
 
 					<form method="post" action="?/remove" use:enhance>
 						<input type="hidden" name="name" value={player.name} />
-						<Button type="submit" icon={Trash2} className="!bg-red-900 hover:!bg-red-700 border-red-800 text-white !text-sm !px-4 !py-2"></Button>
+						<Button
+							type="submit"
+							icon={Trash2}
+							className="!bg-red-900 hover:!bg-red-700 border-red-800 text-white !text-sm !px-4 !py-2"
+						></Button>
 					</form>
 				</div>
 			{/each}

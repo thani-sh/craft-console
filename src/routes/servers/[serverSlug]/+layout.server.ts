@@ -7,7 +7,7 @@ import fs from 'fs';
 export const load: LayoutServerLoad = async ({ params }) => {
 	const slug = params.serverSlug;
 	const serverDir = path.join(process.cwd(), 'data', 'servers', slug);
-	
+
 	if (!fs.existsSync(serverDir)) {
 		error(404, 'Server not found');
 	}
