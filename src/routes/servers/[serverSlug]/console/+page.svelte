@@ -3,11 +3,13 @@
 	import { page } from '$app/state';
 	import { enhance } from '$app/forms';
 	import { Button, Heading, Input, Text } from '$lib/client/ui';
-	import { Play, Square, RefreshCw, Download } from 'lucide-svelte';
+	import { Play, Square, RefreshCw, Download, ArrowUpCircle, Loader2 } from 'lucide-svelte';
 	import type { PageProps } from './$types';
 	import { getLogs } from './logs.remote';
 
-	let { data }: PageProps = $props();
+	let { data, form }: PageProps = $props();
+
+	let isUpdating = $state(false);
 
 	type ProcessLogLine = {
 		type: 'stdout' | 'stderr';
@@ -151,5 +153,72 @@
 				Download
 			</Button>
 		</div>
+	</div>
+
+	<hr class="border-2 border-zinc-700" />
+
+	<!-- Update Server Section -->
+	<div class="flex flex-col gap-4 border-4 border-zinc-700 bg-zinc-800 p-6">
+		<Heading className="text-2xl">Server Update</Heading>
+
+		<div class="flex flex-col gap-4 sm:flex-row sm:items-center justify-between">
+			<div class="flex flex-col gap-1">
+				<Text>
+					Current Version: <span class="font-mono font-bold text-white">{data.server.version}</span>
+				</Text>
+				<Text>
+					Latest Version: <span class="font-mono font-bold text-white">{data.server.latestVersion}</span>
+				</Text>
+			</div>
+
+			<div class="flex items-center gap-2">
+				{#if data.server.updateAvailable}
+					<span class="rounded bg-yellow-500/20 px-3 py-1.5 text-sm font-bold text-yellow-300 border border-yellow-500/30">
+						Update available
+					</span>
+				{:else}
+					<span class="rounded bg-green-500/20 px-3 py-1.5 text-sm font-bold text-green-300 border border-green-500/30">
+						Already on latest
+					</span>
+				{/if}
+			</div>
+		</div>
+
+		{#if form?.error}
+			<p class="border-4 border-red-500 bg-red-900/50 px-4 py-3 text-lg text-red-300">
+				{form.error}
+			</p>
+		{/if}
+
+		{#if data.server.updateAvailable}
+			{#if data.server.status === 'running'}
+				<p class="border-4 border-yellow-500 bg-yellow-900/50 px-4 py-3 text-lg text-yellow-300">
+					Warning: The server is currently running. Please stop the server before installing updates.
+				</p>
+			{/if}
+
+			<div>
+				<form
+					method="post"
+					action="?/update"
+					use:enhance={() => {
+						isUpdating = true;
+						return async ({ update }) => {
+							await update();
+							isUpdating = false;
+						};
+					}}
+				>
+					<Button
+						type="submit"
+						disabled={isUpdating || data.server.status === 'running'}
+						icon={isUpdating ? Loader2 : ArrowUpCircle}
+						className={isUpdating ? 'animate-pulse' : ''}
+					>
+						{isUpdating ? 'Updating...' : 'Update Server'}
+					</Button>
+				</form>
+			</div>
+		{/if}
 	</div>
 </div>

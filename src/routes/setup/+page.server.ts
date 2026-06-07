@@ -82,6 +82,18 @@ export const actions = {
 
 			// Decompress to the destination
 			await decompress(buffer, serverDir);
+
+			// Extract version info and write version.json
+			const match = downloadUrl.match(/bedrock-server-([\d.]+)\.zip/);
+			const version = match ? match[1] : 'unknown';
+			const downloadType = downloadUrl.includes('preview')
+				? 'serverBedrockPreviewLinux'
+				: 'serverBedrockLinux';
+			await fs.writeFile(
+				path.join(serverDir, 'version.json'),
+				JSON.stringify({ version, downloadType, downloadUrl }, null, 2),
+				'utf8'
+			);
 		} catch (e) {
 			console.error(e);
 			return fail(500, { error: 'Failed to download or extract the server zip.' });

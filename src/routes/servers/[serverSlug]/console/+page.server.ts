@@ -1,5 +1,6 @@
 import type { Actions } from './$types';
-import { startServer, stopServer, writeServerInput } from '$lib/server/minecraft';
+import { startServer, stopServer, writeServerInput, updateServer } from '$lib/server/minecraft';
+import { fail } from '@sveltejs/kit';
 
 export const actions = {
 	start: async ({ params }) => {
@@ -24,5 +25,16 @@ export const actions = {
 		}
 
 		return { success: true };
+	},
+
+	update: async ({ params }) => {
+		const slug = params.serverSlug;
+		try {
+			await updateServer(slug);
+			return { success: true };
+		} catch (e: any) {
+			console.error('Update server failed:', e);
+			return fail(500, { error: e.message || 'Failed to update server version.' });
+		}
 	}
 } satisfies Actions;

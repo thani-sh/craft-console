@@ -1,5 +1,10 @@
 import type { LayoutServerLoad } from './$types';
-import { getServerConfig, getServerStatus } from '$lib/server/minecraft';
+import {
+	getServerConfig,
+	getServerStatus,
+	getServerVersionInfo,
+	getLatestVersionInfo
+} from '$lib/server/minecraft';
 import { error } from '@sveltejs/kit';
 import path from 'path';
 import fs from 'fs';
@@ -15,10 +20,17 @@ export const load: LayoutServerLoad = async ({ params }) => {
 	const config = await getServerConfig(slug);
 	const status = getServerStatus(slug);
 
+	const versionInfo = await getServerVersionInfo(slug);
+	const latestInfo = await getLatestVersionInfo(versionInfo.downloadType || 'serverBedrockLinux');
+	const latestVersion = latestInfo ? latestInfo.version : 'unknown';
+	const updateAvailable = latestInfo ? latestInfo.version !== versionInfo.version : false;
+
 	return {
 		server: {
 			slug,
-			version: '1.0.0', // Bedrock doesn't strictly have a programmatically queryable version easily
+			version: versionInfo.version,
+			latestVersion,
+			updateAvailable,
 			status,
 			config
 		}

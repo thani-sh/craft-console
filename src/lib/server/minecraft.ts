@@ -1,6 +1,7 @@
 import { spawn, type ChildProcess } from 'child_process';
 import { promises as fs } from 'fs';
 import path from 'path';
+import decompress from 'decompress';
 import {
 	minecraftServerConfigSchema,
 	type MinecraftServerConfig
@@ -258,4 +259,147 @@ export async function getAvailableWorlds(slug: string): Promise<MinecraftWorld[]
 	}
 
 	return worlds.sort((a, b) => b.lastModified - a.lastModified);
+}
+
+// ── Version Update & Management ───────────────────────────────────────────────
+
+export interface MinecraftDownloadLink {
+	downloadType: string;
+	downloadUrl: string;
+}
+
+export interface LatestVersionInfo {
+	version: string;
+	downloadUrl: string;
+}
+
+let cachedLinks: { data: { result?: { links?: MinecraftDownloadLink[] } }; timestamp: number } | null = null;
+const CACHE_TTL = 3600 * 1000; // 1 hour
+
+async function fetchDownloadLinks() {
+	if (cachedLinks && Date.now() - cachedLinks.timestamp < CACHE_TTL) {
+		return cachedLinks.data;
+	}
+	const res = await fetch(
+		'https://net-secondary.web.minecraft-services.net/api/v1.0/download/links'
+	);
+	if (!res.ok) {
+		throw new Error(`Failed to fetch links: ${res.statusText}`);
+	}
+	const data = await res.json();
+	cachedLinks = { data, timestamp: Date.now() };
+	return data;
+}
+
+export async function getServerVersionInfo(slug: string): Promise<{ version: string; downloadType: string; downloadUrl?: string }> {
+	const serverDir = getServerDir(slug);
+	const versionPath = path.join(serverDir, 'version.json');
+	try {
+		const content = await fs.readFile(versionPath, 'utf8');
+		const info = JSON.parse(content);
+		return {
+			version: info.version || '1.0.0',
+			downloadType: info.downloadType || 'serverBedrockLinux',
+			downloadUrl: info.downloadUrl
+		};
+	} catch {
+		return {
+			version: '1.0.0',
+			downloadType: 'serverBedrockLinux'
+		};
+	}
+}
+
+export async function getLatestVersionInfo(downloadType: string): Promise<LatestVersionInfo | null> {
+	try {
+		const data = await fetchDownloadLinks();
+		const links = (data?.result?.links || []) as MinecraftDownloadLink[];
+		const link = links.find((l) => l.downloadType === downloadType);
+		if (!link) return null;
+
+		const match = link.downloadUrl.match(/bedrock-server-([\d.]+)\.zip/);
+		const version = match ? match[1] : 'unknown';
+		return {
+			version,
+			downloadUrl: link.downloadUrl
+		};
+	} catch (e) {
+		console.error('Error fetching latest version:', e);
+		return null;
+	}
+}
+
+export async function updateServer(slug: string) {
+	// 1. Ensure server is stopped
+	if (getServerStatus(slug) === 'running') {
+		throw new Error('Server must be stopped before updating.');
+	}
+
+	const versionInfo = await getServerVersionInfo(slug);
+	const downloadType = versionInfo.downloadType || 'serverBedrockLinux';
+	const latestInfo = await getLatestVersionInfo(downloadType);
+	if (!latestInfo) {
+		throw new Error('Failed to retrieve the latest version information from Minecraft services.');
+	}
+
+	if (versionInfo.version === latestInfo.version) {
+		throw new Error('Server is already on the latest version.');
+	}
+
+	const serverDir = getServerDir(slug);
+	const newServerDir = `${serverDir}.new`;
+
+	// Delete existing newServerDir if it exists from a previous failed run
+	await fs.rm(newServerDir, { recursive: true, force: true }).catch(() => {});
+	await fs.mkdir(newServerDir, { recursive: true });
+
+	// Download and decompress
+	const res = await fetch(latestInfo.downloadUrl);
+	if (!res.ok) {
+		throw new Error(`Failed to download server zip: ${res.statusText}`);
+	}
+	const arrayBuffer = await res.arrayBuffer();
+	const buffer = Buffer.from(arrayBuffer);
+	await decompress(buffer, newServerDir);
+
+	// Copy files
+	const filesToCopy = [
+		'server.properties',
+		'allowlist.json',
+		'worlds',
+		'development_behavior_packs',
+		'development_resource_packs',
+		'development_skin_packs'
+	];
+
+	for (const fileName of filesToCopy) {
+		const srcPath = path.join(serverDir, fileName);
+		const destPath = path.join(newServerDir, fileName);
+		try {
+			await fs.cp(srcPath, destPath, { recursive: true });
+		} catch (err: any) {
+			if (err.code !== 'ENOENT') {
+				throw err;
+			}
+		}
+	}
+
+	// Write new version.json
+	await fs.writeFile(
+		path.join(newServerDir, 'version.json'),
+		JSON.stringify(
+			{
+				version: latestInfo.version,
+				downloadType,
+				downloadUrl: latestInfo.downloadUrl
+			},
+			null,
+			2
+		),
+		'utf8'
+	);
+
+	// Swap directories
+	await fs.rm(serverDir, { recursive: true, force: true });
+	await fs.rename(newServerDir, serverDir);
 }
