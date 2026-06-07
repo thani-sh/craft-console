@@ -31,9 +31,7 @@
 </svelte:head>
 
 <Heading>Setup a new server</Heading>
-<Text className="mb-8 text-center max-w-xl">
-	Choose Minecraft server version.
-</Text>
+<Text className="mb-8 text-center max-w-xl">Choose Minecraft server version.</Text>
 
 {#if data.error}
 	<p
@@ -83,7 +81,7 @@
 					onchange={(e) => {
 						selectedUrl = (e.target as HTMLSelectElement).value;
 					}}
-					class="relative block w-full appearance-none border-4 border-gray-700 bg-gray-800 p-4 pr-8 text-xl font-bold text-white shadow-inner outline-none invalid:border-red-500 focus:border-gray-300 disabled:cursor-not-allowed disabled:opacity-50"
+					class="relative block w-full appearance-none border-4 border-gray-700 bg-gray-800 p-4 pr-8 text-xl font-bold text-white shadow-inner outline-none user-invalid:border-red-500 focus:border-gray-300 disabled:cursor-not-allowed disabled:opacity-50"
 				>
 					{#each selectOptions as option (option.value)}
 						<option value={option.value} class="bg-gray-800 py-4 text-white">

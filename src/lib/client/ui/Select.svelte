@@ -40,7 +40,7 @@
 				{disabled}
 				{required}
 				onchange={(e) => onchange?.((e.target as HTMLSelectElement).value as T)}
-				class="relative block w-full appearance-none border-4 border-gray-700 bg-gray-800 p-4 pr-8 text-xl font-bold text-white shadow-inner outline-none invalid:border-red-500 focus:border-gray-300 disabled:cursor-not-allowed disabled:opacity-50"
+				class="relative block w-full appearance-none border-4 border-gray-700 bg-gray-800 p-4 pr-8 text-xl font-bold text-white shadow-inner outline-none user-invalid:border-red-500 focus:border-gray-300 disabled:cursor-not-allowed disabled:opacity-50"
 			>
 				{#each options as option}
 					{#if typeof option === 'string'}

@@ -13,7 +13,7 @@
 <div class="flex h-screen flex-col items-center justify-center p-8">
 	<div class="flex w-full max-w-md flex-col items-center">
 		<Heading className="text-5xl mb-2">Craft Console</Heading>
-		<Text className="mb-12">Sign in to manage your servers</Text>
+		<Text className="mb-12">Manage your bedrocks</Text>
 
 		<form method="post" action="?/login" use:enhance class="flex w-full flex-col gap-6">
 			<Input id="username" label="Username:" type="text" required />

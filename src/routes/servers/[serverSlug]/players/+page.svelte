@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import { Button, Heading, Input, Text } from '$lib/client/ui';
-	import { UserPlus, Trash2, ShieldCheck } from 'lucide-svelte';
+	import { UserPlus, Trash2, ShieldCheck, Download, Upload } from 'lucide-svelte';
 	import type { PageProps } from './$types';
 
 	let { data, form }: PageProps = $props();
@@ -70,7 +70,7 @@
 				</Text>
 			</div>
 		{:else}
-			{#each data.players as player, i}
+			{#each data.players as player, i (player.name)}
 				<div
 					class="flex items-center justify-between gap-4 px-6 py-4 {i % 2 === 0
 						? 'bg-zinc-800'
@@ -110,5 +110,57 @@
 				</div>
 			{/each}
 		{/if}
+	</div>
+
+	<!-- Export Allowlist Section -->
+	<div class="mt-8 border-4 border-zinc-700 bg-zinc-800 p-6">
+		<Text className="text-white font-bold mb-4 text-lg">Export Allowlist</Text>
+		<Text className="text-zinc-400 mb-6 text-sm">
+			Download the current allowlist.json file containing all allowed players.
+		</Text>
+		<div>
+			<Button
+				onclick={() => {
+					window.location.href = `/servers/${data.server.slug}/players/export-allowlist`;
+				}}
+				icon={Download}
+			>
+				Export
+			</Button>
+		</div>
+	</div>
+
+	<!-- Import Allowlist Section -->
+	<div class="mt-8 border-4 border-zinc-700 bg-zinc-800 p-6">
+		<Text className="text-white font-bold mb-4 text-lg">Import Allowlist</Text>
+		<Text className="text-zinc-400 mb-6 text-sm">
+			Upload an allowlist.json file to replace the current players list. If the server is active,
+			updates will be hot-reloaded automatically.
+		</Text>
+
+		{#if form && 'success' in form && form.success && !playerName}
+			<div class="mb-4 border-4 border-green-600 bg-green-900 px-4 py-2 text-sm text-white">
+				Successfully imported allowlist.json!
+			</div>
+		{/if}
+
+		<form
+			method="post"
+			action="?/importAllowlist"
+			enctype="multipart/form-data"
+			use:enhance
+			class="flex flex-col gap-6"
+		>
+			<Input
+				id="allowlistFile"
+				label="Import allowlist file (JSON):"
+				type="file"
+				accept=".json"
+				required
+			/>
+			<div>
+				<Button type="submit" icon={Upload}>Import</Button>
+			</div>
+		</form>
 	</div>
 </div>

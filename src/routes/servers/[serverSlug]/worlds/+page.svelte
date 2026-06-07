@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { PageProps } from './$types';
 	import { Heading, Text, Button } from '$lib/client/ui';
+	import { Download } from 'lucide-svelte';
 
 	let { data }: PageProps = $props();
 
@@ -20,6 +21,13 @@
 
 <div class="flex w-full flex-col gap-8">
 	<Heading>Server Worlds</Heading>
+
+	{#if data.server.status === 'running'}
+		<p class="border-4 border-yellow-500 bg-yellow-900/50 px-4 py-3 text-xl text-yellow-300">
+			Warning: The server is currently running. Taking a world backup now may result in incomplete
+			or corrupted world databases. We recommend stopping the server first.
+		</p>
+	{/if}
 
 	{#if data.worlds.length === 0}
 		<div class="w-full border-4 border-zinc-700 bg-zinc-900 p-8 text-center">
@@ -55,10 +63,17 @@
 						</div>
 					</div>
 
-					<!--
-					We could potentially add buttons here in the future for "Download Backup"
-					or "Delete World" if those operations become supported!
-					-->
+					<div class="mt-2">
+						<Button
+							onclick={() => {
+								window.location.href = `/servers/${data.server.slug}/worlds/${world.id}/backup`;
+							}}
+							icon={Download}
+							className="!text-sm !px-4 !py-2"
+						>
+							Download
+						</Button>
+					</div>
 				</div>
 			{/each}
 		</div>

@@ -57,7 +57,7 @@
 				{step}
 				{accept}
 				oninput={(e) => onchange?.((e.target as HTMLInputElement).value as T)}
-				class="relative block w-full border-4 border-gray-700 bg-gray-800 p-4 text-xl font-bold text-white shadow-inner outline-none invalid:border-red-500 focus:border-gray-300 disabled:cursor-not-allowed disabled:opacity-50"
+				class="relative block w-full border-4 border-gray-700 bg-gray-800 p-4 text-xl font-bold text-white shadow-inner outline-none user-invalid:border-red-500 focus:border-gray-300 disabled:cursor-not-allowed disabled:opacity-50"
 			/>
 		</div>
 		{#if description}
