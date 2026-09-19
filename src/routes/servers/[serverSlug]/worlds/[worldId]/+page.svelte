@@ -88,7 +88,7 @@
 						</Text>
 					</div>
 				{:else}
-					{#each section.packs as addon, i (addon.uuid)}
+					{#each section.packs as addon, i (addon.type + ':' + addon.folder)}
 						<label
 							class="flex cursor-pointer items-center gap-4 px-6 py-4 {i % 2 === 0
 								? 'bg-zinc-800'
@@ -132,7 +132,7 @@
 					These entries stay in the world files until the packs are installed again, or the packs
 					are deleted from the server.
 				</Text>
-				{#each [...missing.behavior, ...missing.resource] as entry (entry.pack_id)}
+				{#each [...missing.behavior.map( (entry) => ({ ...entry, type: 'behavior' }) ), ...missing.resource.map( (entry) => ({ ...entry, type: 'resource' }) )] as entry (entry.type + ':' + entry.pack_id)}
 					<span class="text-xs text-yellow-100"
 						>{formatUuid(entry.pack_id)} v{entry.version.join('.')}</span
 					>

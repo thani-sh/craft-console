@@ -87,7 +87,7 @@
 					</Text>
 				</div>
 			{:else}
-				{#each section.packs as addon, i (addon.uuid)}
+				{#each section.packs as addon, i (addon.type + ':' + addon.folder)}
 					<div
 						class="flex items-center justify-between gap-4 px-6 py-4 {i % 2 === 0
 							? 'bg-zinc-800'
