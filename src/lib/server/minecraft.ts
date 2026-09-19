@@ -168,12 +168,35 @@ function getAllowlistPath(slug: string) {
 }
 
 export async function getAllowedPlayers(slug: string): Promise<AllowedPlayer[]> {
+	let content: string;
 	try {
-		const content = await fs.readFile(getAllowlistPath(slug), 'utf8');
-		return JSON.parse(content) as AllowedPlayer[];
+		content = await fs.readFile(getAllowlistPath(slug), 'utf8');
 	} catch {
 		return [];
 	}
+
+	let parsed: unknown;
+	try {
+		parsed = JSON.parse(content);
+	} catch {
+		return [];
+	}
+
+	if (!Array.isArray(parsed)) return [];
+
+	// A player's name is their identity: add/remove already treat it case-insensitively.
+	// Drop entries Svelte cannot key by (missing or blank names) and collapse repeats,
+	// otherwise the keyed each on the players page throws each_key_duplicate.
+	const seen = new Set<string>();
+	return parsed.filter((player): player is AllowedPlayer => {
+		if (typeof player !== 'object' || player === null) return false;
+		const name = (player as { name?: unknown }).name;
+		if (typeof name !== 'string' || name.trim() === '') return false;
+		const key = name.toLowerCase();
+		if (seen.has(key)) return false;
+		seen.add(key);
+		return true;
+	});
 }
 
 export async function addAllowedPlayer(slug: string, player: AllowedPlayer): Promise<void> {
