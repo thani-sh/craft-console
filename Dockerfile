@@ -1,9 +1,8 @@
 # ── Stage 1: build ─────────────────────────────────────────────────────────────
-FROM node:24-bookworm-slim AS builder
+FROM oven/bun:1.4.2-slim AS builder
 
-# Bun provides the package manager and build tool; Node still runs the app.
-COPY --from=oven/bun:1.4.2 /usr/local/bin/bun /usr/local/bin/bun
-
+# The oven/bun images define a bun user; the app writes into /app, so stay root.
+USER root
 WORKDIR /app
 
 # Install dependencies first (better layer caching)
@@ -14,18 +13,19 @@ RUN bun install --frozen-lockfile
 COPY . .
 RUN bun run build
 
-
 # ── Stage 2: production ────────────────────────────────────────────────────────
-FROM node:24-bookworm-slim AS production
+FROM oven/bun:1.4.2-slim AS production
 
+USER root
 WORKDIR /app
 
 ENV NODE_ENV=production
 ENV PORT=3000
 ENV HOST=0.0.0.0
 
-# Install dependencies for Minecraft Bedrock Server (libcurl4)
-RUN apt-get update && apt-get install -y libcurl4 && rm -rf /var/lib/apt/lists/*
+# Runtime library the Minecraft Bedrock Server binary needs (libcurl4)
+RUN apt-get update && apt-get install -y --no-install-recommends libcurl4 \
+    && rm -rf /var/lib/apt/lists/*
 
 # Copy built output from builder
 COPY --from=builder /app/build ./build
@@ -39,4 +39,4 @@ EXPOSE 3000
 EXPOSE 19132/udp
 EXPOSE 19133/udp
 
-CMD ["node", "build/index.js"]
+CMD ["bun", "build/index.js"]
