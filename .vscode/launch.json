@@ -24,7 +24,7 @@
 			"name": "Debug Server",
 			"cwd": "${workspaceFolder}",
 			"runtimeExecutable": "bun",
-			"runtimeArgs": ["dev"],
+			"runtimeArgs": ["run", "dev"],
 			"console": "integratedTerminal",
 			"sourceMaps": true,
 			"restart": true,
