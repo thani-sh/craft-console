@@ -8,8 +8,7 @@ const SESSION_DURATION_MS = 1000 * 60 * 60 * 24; // 24 hours
 const sessions = new Map<string, number>();
 
 export type SessionValidationResult =
-	| { user: { username: string }; session: { token: string } }
-	| { user: null; session: null };
+	{ user: { username: string }; session: { token: string } } | { user: null; session: null };
 
 export function validateCredentials(username: string, password: string): boolean {
 	const adminUser = env.ADMIN_USER;

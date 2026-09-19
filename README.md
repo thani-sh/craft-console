@@ -11,12 +11,12 @@ A web-based management console for Minecraft Bedrock servers. Upload and run ser
 ### Prerequisites
 
 - [Node.js](https://nodejs.org/) 24+
-- [Yarn](https://yarnpkg.com/) 4+
+- [Bun](https://bun.sh/) 1.4+ (package manager and script runner)
 
 ### Install dependencies
 
 ```bash
-yarn install
+bun install
 ```
 
 ### Configure environment
@@ -35,7 +35,7 @@ ADMIN_PASS=your_password
 ### Run in development
 
 ```bash
-yarn dev
+bun run dev
 ```
 
 The app will be available at `http://localhost:5173`.

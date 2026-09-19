@@ -41,10 +41,7 @@ export interface BooleanFormControlDef {
 	default?: boolean;
 }
 export type FormControlDef =
-	| TextFormControlDef
-	| EnumFormControlDef
-	| NumberFormControlDef
-	| BooleanFormControlDef;
+	TextFormControlDef | EnumFormControlDef | NumberFormControlDef | BooleanFormControlDef;
 
 /**
  * Unwrap a zod schema, stripping Optional, Default, and Pipe (preprocess) wrappers,
