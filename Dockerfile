@@ -1,18 +1,19 @@
 # ── Stage 1: build ─────────────────────────────────────────────────────────────
 FROM node:24-bookworm-slim AS builder
 
+# Bun provides the package manager and build tool; Node still runs the app.
+COPY --from=oven/bun:1.4.2 /usr/local/bin/bun /usr/local/bin/bun
+
 WORKDIR /app
 
 # Install dependencies first (better layer caching)
-COPY package.json yarn.lock .yarnrc.yml ./
-RUN corepack enable && yarn install --frozen-lockfile
+COPY package.json bun.lock ./
+RUN bun install --frozen-lockfile
 
 # Copy source and build
 COPY . .
-RUN yarn build
+RUN bun run build
 
-# Prune dev dependencies so we only ship what's needed
-RUN yarn workspaces focus --production 2>/dev/null || yarn install --frozen-lockfile --production 2>/dev/null || true
 
 # ── Stage 2: production ────────────────────────────────────────────────────────
 FROM node:24-bookworm-slim AS production

@@ -20,26 +20,27 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      # package.json pins yarn 4 through packageManager, so let Corepack provide it.
-      - name: Enable Corepack
-        run: corepack enable
-
+      # Node runs the app; Bun provides the package manager and the scripts.
       - uses: actions/setup-node@v5
         with:
           node-version: 24
-          cache: yarn
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.2
 
       - name: Install dependencies
-        run: yarn install --immutable
+        run: bun install --frozen-lockfile
 
       - name: Unit tests
-        run: yarn test:unit --run
+        run: bun run test:unit --run
 
       - name: Type check
-        run: yarn check
+        run: bun run check
 
       - name: Formatting
-        run: yarn format:check
+        run: bun run format:check
 
-      # ESLint is not wired in yet: `yarn lint` has 17 errors on main, tracked in
+      # ESLint is not wired in yet: `bun run lint` has 17 errors on main, tracked in
       # https://github.com/thani-sh/craft-console/issues/4

@@ -23,7 +23,7 @@
 			"request": "launch",
 			"name": "Debug Server",
 			"cwd": "${workspaceFolder}",
-			"runtimeExecutable": "yarn",
+			"runtimeExecutable": "bun",
 			"runtimeArgs": ["dev"],
 			"console": "integratedTerminal",
 			"sourceMaps": true,
