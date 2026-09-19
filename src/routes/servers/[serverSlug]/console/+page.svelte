@@ -27,7 +27,9 @@
 	const fetchLogs = async () => {
 		if (!slug) return;
 		try {
-			const newLogs = await getLogs(slug).run();
+			const logQuery = getLogs(slug);
+			await logQuery.refresh();
+			const newLogs = logQuery.current;
 			if (newLogs && newLogs.length !== logs.length) {
 				logs = newLogs;
 				requestAnimationFrame(() => {
